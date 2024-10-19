@@ -6,19 +6,21 @@ from scipy.integrate import odeint
 
 class Goodwill_models:
 
-    def __init__(self, par, v, k, n):
+    def __init__(self, par, v, k, n, t):
         """_summary_
 
         Args:
-            par (array): x, y, z
+            par (array): x, y, z -> y0
             v (array): v1, v2, v3, v4, v5, v6
             k (array): K1, K2, K4, K6
             n (int): 
+            t (array): timespan
         """
         self.par = par
         self.v = v
         self.k = k
         self.n = n
+        self.t = t
         
 
     def goodwill(self):
@@ -43,6 +45,28 @@ class Goodwill_models:
 
     def goodwill_solver(self):
         par = self.par
-        v = self.v
-        k = self.k
-        n = self.n
+        t = self.t
+        return odeint(self.goodwill(), par, t, args = [self.v, self.k, self.n])
+
+
+
+
+
+
+par = [0,0,0]
+v = [0.7, 0.45, 0.7,0.35, 0.7, 0.35]
+k = [1,1,1,1]
+n = 7
+t = np.linspace(0,120)
+
+good = Goodwill_models(par, v, k, n, t)
+
+z = good.goodwill_solver()
+print(z)
+
+# plt.plot(t,z[:,0],'b-',label=r'$\frac{dx}{dt}=3 \; \exp(-t)$')
+# plt.plot(t,z[:,1],'r--',label=r'$\frac{dy}{dt}=-y+3$')
+# plt.ylabel('response')
+# plt.xlabel('time')
+# plt.legend(loc='best')
+# plt.show()
