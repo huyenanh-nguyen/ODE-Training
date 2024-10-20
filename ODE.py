@@ -3,6 +3,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
+def goodwill(par, t , v, k, n):
+    """Goodwill-Oscillator models
+        dx/dt = v1 * K1^n/(K1^n+z^n) - v2 * x/(K2+x)
+
+        dy/dt = v3 * x - v4 * y/(K4+y)
+
+        dz/dt = v5*y - v6 * z/(K6+z)
+    """
+
+    x,y,z = par
+
+    dx = v[0] * (k[0]**n / (k[0]**n + z)) - v[1] * (x / (k[1] + x))
+    dy = v[2] * x - v[3] * ( y / (k[2] + y))
+    dz = v[4] * y - v[5] * (z / (k[3] + z))
+
+    return [dx, dy, dz]
+
+
 
 class Goodwill_models:
 
@@ -22,31 +40,15 @@ class Goodwill_models:
         self.n = n
         self.t = t
         
+    def goodwill_solver(self):
 
-    def goodwill(self):
-        """Goodwill-Oscillator models
-            dx/dt = v1 * K1^n/(K1^n+z^n) - v2 * x/(K2+x)
-
-            dy/dt = v3 * x - v4 * y/(K4+y)
-
-            dz/dt = v5*y - v6 * z/(K6+z)
-        """
+        t = self.t
         par = self.par
         v = self.v
         k = self.k
         n = self.n
 
-        x = v[0] * (k[0]**n / (k[0]**n + par[2])) - v[1] * (par[0] / (k[1] + par[0]))
-        y = v[2] * par[0] - v[3] * ( par[1] / (k[2] + par[1]))
-        z = v[4] * par[1] - v[5] * (par[2] / (k[3] + par[2]))
-
-        return [x, y, z]
-    
-
-    def goodwill_solver(self):
-        par = self.par
-        t = self.t
-        return odeint(self.goodwill(), par, t, args = [self.v, self.k, self.n])
+        return odeint(goodwill, par, t, args = (v, k , n))
 
 
 
@@ -54,19 +56,19 @@ class Goodwill_models:
 
 
 par = [0,0,0]
-v = [0.7, 0.45, 0.7,0.35, 0.7, 0.35]
+v = [0.7, 0.45, 0.7, 0.35, 0.7, 0.35]
 k = [1,1,1,1]
 n = 7
-t = np.linspace(0,120)
+t = np.arange(0,1000, 0.01)
 
 good = Goodwill_models(par, v, k, n, t)
 
 z = good.goodwill_solver()
 print(z)
 
-# plt.plot(t,z[:,0],'b-',label=r'$\frac{dx}{dt}=3 \; \exp(-t)$')
-# plt.plot(t,z[:,1],'r--',label=r'$\frac{dy}{dt}=-y+3$')
-# plt.ylabel('response')
-# plt.xlabel('time')
-# plt.legend(loc='best')
-# plt.show()
+plt.plot(t,z[:,0],'b-',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
+plt.plot(t,z[:,1],'r--',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
+plt.ylabel('response')
+plt.xlabel('time')
+plt.legend(loc='best')
+plt.show()
