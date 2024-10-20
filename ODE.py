@@ -13,10 +13,12 @@ def goodwill(par, t , v, k, n):
     """
 
     x,y,z = par
+    v1, v2, v3, v4, v5, v6 = v
+    k1,k2,k4,k6 = k
 
-    dx = v[0] * (k[0]**n / (k[0]**n + z)) - v[1] * (x / (k[1] + x))
-    dy = v[2] * x - v[3] * ( y / (k[2] + y))
-    dz = v[4] * y - v[5] * (z / (k[3] + z))
+    dx = (v1 * (k1**n / (k1**n + z**n))) - v2 * (x / (k2 + x))
+    dy = (v3 * x) - (v4 * ( y / (k4 + y)))
+    dz = (v5 * y) - (v6 * (z / (k6 + z)))
 
     return [dx, dy, dz]
 
@@ -59,16 +61,19 @@ par = [0,0,0]
 v = [0.7, 0.45, 0.7, 0.35, 0.7, 0.35]
 k = [1,1,1,1]
 n = 7
-t = np.arange(0,1000, 0.01)
+t = np.arange(0.0,1000, 0.01)
 
 good = Goodwill_models(par, v, k, n, t)
 
 z = good.goodwill_solver()
 print(z)
 
-plt.plot(t,z[:,0],'b-',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
-plt.plot(t,z[:,1],'r--',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
+plt.plot(t,z[:,0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
+plt.plot(t,z[:,1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
+plt.plot(t,z[:,2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
 plt.ylabel('response')
+plt.ylim(-1,5)
+plt.xlim(200,300)
 plt.xlabel('time')
 plt.legend(loc='best')
 plt.show()
