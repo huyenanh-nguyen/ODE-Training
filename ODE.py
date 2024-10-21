@@ -52,13 +52,18 @@ class Goodwill_models:
         n = self.n
 
         return odeint(goodwill, par, t, args = (v, k, n))
+    
+    def norm_to_mean(self):
+        solv = self.goodwill_solver()
+        norm = [solv[:,i] / np.mean(solv[:,i]) for i in range(solv.shape[1])]   # normalizing to mean
+
+        return norm
 
 
     def goodplot_timeseries(self):
 
-        solv = self.goodwill_solver()
-        norm = [solv[:,i] / np.mean(solv[:,i]) for i in range(solv.shape[1])]   # normalizing to mean
-
+        norm = self.norm_to_mean()
+        
         plt.plot(t,norm[0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
         plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
         plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
