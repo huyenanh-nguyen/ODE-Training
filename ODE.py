@@ -57,9 +57,11 @@ class Goodwill_models:
     def goodplot_timeseries(self):
 
         solv = self.goodwill_solver()
-        plt.plot(t,solv[:,0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
-        plt.plot(t,solv[:,1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
-        plt.plot(t,solv[:,2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
+        norm = [solv[:,i] / np.mean(solv[:,i]) for i in range(solv.shape[1])]   # normalizing to mean
+
+        plt.plot(t,norm[0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
+        plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
+        plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
         plt.ylabel('concentraition [a.u.]')
         plt.ylim(-1,5)
         plt.xlim(200,300)
