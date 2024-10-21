@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
+
 def goodwill(par, t , v, k, n):
     """Goodwill-Oscillator models
         dx/dt = v1 * K1^n/(K1^n+z^n) - v2 * x/(K2+x)
@@ -21,7 +22,6 @@ def goodwill(par, t , v, k, n):
     dz = (v5 * y) - (v6 * (z / (k6 + z)))
 
     return [dx, dy, dz]
-
 
 
 class Goodwill_models:
@@ -53,6 +53,7 @@ class Goodwill_models:
 
         return odeint(goodwill, par, t, args = (v, k, n))
     
+    
     def norm_to_mean(self):
         solv = self.goodwill_solver()
         norm = [solv[:,i] / np.mean(solv[:,i]) for i in range(solv.shape[1])]   # normalizing to mean
@@ -63,7 +64,7 @@ class Goodwill_models:
     def goodplot_timeseries(self):
 
         norm = self.norm_to_mean()
-        
+
         plt.plot(t,norm[0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
         plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
         plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
@@ -76,8 +77,35 @@ class Goodwill_models:
 
         return None
 
-        
 
+    def spacetime(self):
+        norm = self.norm_to_mean()
+
+        plt.subplot(3, 1, 1)
+        plt.plot(norm[0],norm[1],'g')
+        plt.ylabel('[y] [a.u.]')
+        plt.xlabel('x concentraition [a.u.]')
+        plt.ylim(0,2.5)
+        plt.xlim(0,4)
+        plt.title("Spacetime")
+
+        plt.subplot(3, 1, 2)
+        plt.plot(norm[0],norm[2], 'r')
+        plt.ylabel('[z] [a.u.]')
+        plt.xlabel('x concentraition [a.u.]')
+        plt.ylim(0,2.5)
+        plt.xlim(0,4)
+
+        plt.subplot(3, 1, 3)
+        plt.plot(norm[1],norm[2], 'b')
+        plt.ylabel('[z] [a.u.]')
+        plt.xlabel('y concentraition [a.u.]')
+        plt.ylim(0,2.5)
+        plt.xlim(0,4)
+
+        plt.show()
+
+        return None
 
 
 # [examples]_______________________________________________________________________________________________________________________
@@ -91,6 +119,6 @@ t = np.arange(0.0,1000, 0.01)
 good = Goodwill_models(par, v, k, n, t)
 
 solv = good.goodplot_timeseries()
-print(solv)
+print(solv, good.spacetime())
 
 
