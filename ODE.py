@@ -57,7 +57,7 @@ class Goodwill_models:
     def norm_to_mean(self):
         solv = self.goodwill_solver()
         norm = [solv[:,i] / np.mean(solv[:,i]) for i in range(solv.shape[1])]   # normalizing to mean
-
+        
         return norm
 
 
@@ -70,7 +70,7 @@ class Goodwill_models:
         plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
         plt.ylabel('concentraition [a.u.]')
         plt.ylim(-1,5)
-        plt.xlim(200,300)
+        plt.xlim(0,self.t[-1])
         plt.xlabel('time [h]')
         plt.legend(loc='best')
         plt.show()
@@ -78,7 +78,7 @@ class Goodwill_models:
         return None
 
 
-    def spacetime(self):
+    def phasespace(self):
         norm = self.norm_to_mean()
 
         plt.subplot(3, 1, 1)
@@ -87,7 +87,7 @@ class Goodwill_models:
         plt.xlabel('x concentraition [a.u.]')
         plt.ylim(0,2.5)
         plt.xlim(0,4)
-        plt.title("Spacetime")
+        plt.title("Phasespace")
 
         plt.subplot(3, 1, 2)
         plt.plot(norm[0],norm[2], 'r')
@@ -106,19 +106,57 @@ class Goodwill_models:
         plt.show()
 
         return None
+    
+
+    def bifurcation_values(self, v_start : int, v_end : int, v_index : int, par_index : int):
+        """getting max and min of our solution
+
+        Args:
+            v_start (int): Start
+            v_end (int): End
+            v_index (int) : index for which v will be look at
+            par_index (int) : index for which parameter
+        """
+
+        t = self.t
+        par = self.par
+        k = self.k
+        n = self.n
+        v_look = np.arange(v_start, v_end, 0.01)
+        maxi = []
+        mini = []
+        v = self.v
+
+        for i in v_look:
+            v[v_index] = i
+            solv = odeint(goodwill, par, t, args = (v, k, n))
+            norm = solv[:,par_index] / np.mean(solv[:,par_index])
+            maxi.append(max(norm))
+            mini.append(min(norm))
+        
+        return maxi, mini
 
 
-# [examples]_______________________________________________________________________________________________________________________
+
+
+
+
 
 par = [0,0,0]
 v = [0.7, 0.45, 0.7, 0.35, 0.7, 0.35]
 k = [1,1,1,1]
 n = 7
-t = np.arange(0.0,1000, 0.01)
+t = np.arange(0.0,300, 0.001)
 
 good = Goodwill_models(par, v, k, n, t)
 
+
+# [examples, timeseries and phasespace]_______________________________________________________________________________________________________________________
+
 solv = good.goodplot_timeseries()
-print(solv, good.spacetime())
+# print(solv, good.phasespace())
 
 
+# [examples, bifurcation]_______________________________________________________________________________________________________________________
+
+# print(good.bifurcation_values(0.1,1.5, 1, 0))
