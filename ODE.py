@@ -134,7 +134,7 @@ class Goodwill_models:
 
         solve = [odeint(goodwill, par, t, args = (o, k, n)) for o in v_new]
         
-        normalize = lambda x: [x[-12000:, j] / np.mean(x[-12000:, j]) for j in range(3)]
+        normalize = lambda x: [x[-5000:, j] / np.mean(x[-5000:, j]) for j in range(3)]
 
         norm = [normalize(i) for i in solve]
 
@@ -153,21 +153,21 @@ class Goodwill_models:
         if par_index == 0 :
             plt.ylabel('x$_{min}$, x$_{max}$')
             plt.ylim(0,6)
-            plt.xlim(0,v_end)
+            #plt.xlim(0,v_end)
             label = "x rate by changing " + v[v_index]
             plt.xlabel(label)
         
         elif par_index == 1:
             plt.ylabel('y$_{min}$, y$_{max}$')
             plt.ylim(0,6)
-            plt.xlim(0,v_end)
+            #plt.xlim(0,v_end)
             label = "y rate by changing " + v[v_index]
             plt.xlabel(label)
         
         else:
             plt.ylabel('z$_{min}$, z$_{max}$')
             plt.ylim(0,6)
-            plt.xlim(0,v_end)
+            #plt.xlim(0,v_end)
             label = "z rate by changing " + v[v_index]
             plt.xlabel(label)
 
@@ -199,7 +199,7 @@ print(solv, good.phasespace())
 
 # [examples, bifurcation]_______________________________________________________________________________________________________________________
 
-print(good.bifurcation_plot(0.01,1.5, 1, 0))
+print(good.bifurcation_plot(0.45,1.5, 1, 0))
 
 # there is some damping issues and some min and max issues..
 
