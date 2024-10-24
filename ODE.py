@@ -56,7 +56,7 @@ class Goodwill_models:
     
     def norm_to_mean(self):
         solv = self.goodwill_solver()
-        norm = [solv[:,i] / np.mean(solv[:,i]) for i in range(solv.shape[1])]   # normalizing to mean
+        norm = [solv[-12000:,i] / np.mean(solv[-12000:,i]) for i in range(solv.shape[1])]   # normalizing to mean
 
         return norm
 
@@ -64,14 +64,14 @@ class Goodwill_models:
     def goodplot_timeseries(self):
 
         norm = self.norm_to_mean()
-        t = self.t
-
+        t = self.t[-12000:]
+        
         plt.plot(t,norm[0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
         plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
         plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
         plt.ylabel('concentraition [a.u.]')
         plt.ylim(0,5)
-        plt.xlim(0,t[-1])
+        plt.xlim(t[0],t[-1])
         plt.xlabel('time [h]')
         plt.legend(loc='best')
         plt.show()
@@ -86,23 +86,23 @@ class Goodwill_models:
         plt.plot(norm[0],norm[1],'g')
         plt.ylabel('[y] [a.u.]')
         plt.xlabel('x concentraition [a.u.]')
-        plt.ylim(0,2.5)
-        plt.xlim(0,4)
+        plt.ylim(0,3)
+        plt.xlim(0,5)
         plt.title("Phasespace")
 
         plt.subplot(3, 1, 2)
         plt.plot(norm[0],norm[2], 'r')
         plt.ylabel('[z] [a.u.]')
         plt.xlabel('x concentraition [a.u.]')
-        plt.ylim(0,2.5)
-        plt.xlim(0,4)
+        plt.ylim(0,3)
+        plt.xlim(0,5)
 
         plt.subplot(3, 1, 3)
         plt.plot(norm[1],norm[2], 'b')
         plt.ylabel('[z] [a.u.]')
         plt.xlabel('y concentraition [a.u.]')
-        plt.ylim(0,2.5)
-        plt.xlim(0,4)
+        plt.ylim(0,3)
+        plt.xlim(0,5)
 
         plt.show()
 
@@ -127,16 +127,36 @@ class Goodwill_models:
         maxi = []
         mini = []
         v = self.v
+        v_new = []
+        for i in range(len(v_look)):
+            v[v_index] = v_look[i]
+            v_new.append(v.copy())  #.copy() prevent overrighting the list with the new variable
 
-        for i in v_look:
-            v[v_index] = i
-            solv = odeint(goodwill, par, t, args = (v, k, n))
-            norm = solv[:,par_index] / np.mean(solv[:,par_index])
-            maxi.append(max(solv[:, par_index]))
-            mini.append(min(solv[:, par_index]))
+        solve = [odeint(goodwill, par, t, args = (o, k, n)) for o in v_new]
+        
+        normalize = lambda x: [x[-12000:, j] / np.mean(x[-12000:, j]) for j in range(3)]
+
+        norm = [normalize(i) for i in solve]
+
+        maxi = [max(i[0]) for i in norm]
+        mini = [min(i[0]) for i in norm]
         
         return maxi, mini
 
+    
+    def bifurcation_plot(self, v_start : int, v_end : int, v_index : int, par_index : int):
+        maxi, mini = self.bifurcation_values(v_start, v_end,v_index, par_index)
+        v_look = np.arange(v_start, v_end, 0.01)
+        plt.plot(v_look,maxi,'g')
+        plt.plot(v_look,mini,'g')
+        plt.ylabel('concentraition [a.u.]')
+        plt.ylim(0,6)
+        plt.xlim(0,v_end)
+        plt.xlabel('time [h]')
+        plt.legend(loc='best')
+        plt.show()
+
+        return None
 
 
 
@@ -147,7 +167,7 @@ par = [0,0,0]
 v = [0.7, 0.45, 0.7, 0.35, 0.7, 0.35]
 k = [1,1,1,1]
 n = 7
-t = np.arange(5000,10000, 0.01) # dont set time at 0. there will be some transient effects on the oscillation
+t = np.arange(0,500, 0.01) # dont set time at 0. there will be some transient effects on the oscillation
 
 good = Goodwill_models(par, v, k, n, t)
 
@@ -155,10 +175,13 @@ good = Goodwill_models(par, v, k, n, t)
 # [examples, timeseries and phasespace]_______________________________________________________________________________________________________________________
 
 
-# solv = good.goodplot_timeseries()
-# print(solv, good.phasespace())
+solv = good.goodplot_timeseries()
+print(solv, good.phasespace())
 
 
 # [examples, bifurcation]_______________________________________________________________________________________________________________________
 
-print(good.bifurcation_values(0.5,1, 1, 0)[1])
+print(good.bifurcation_plot(0.35,1.5, 1, 0))
+
+# there is some damping issues and some min and max issues..
+
