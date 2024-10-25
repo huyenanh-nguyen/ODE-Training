@@ -153,21 +153,21 @@ class Goodwill_models:
         if par_index == 0 :
             plt.ylabel('x$_{min}$, x$_{max}$')
             plt.ylim(0,6)
-            #plt.xlim(0,v_end)
+            plt.xlim(0,v_end)
             label = "x rate by changing " + v[v_index]
             plt.xlabel(label)
         
         elif par_index == 1:
             plt.ylabel('y$_{min}$, y$_{max}$')
             plt.ylim(0,6)
-            #plt.xlim(0,v_end)
+            plt.xlim(0,v_end)
             label = "y rate by changing " + v[v_index]
             plt.xlabel(label)
         
         else:
             plt.ylabel('z$_{min}$, z$_{max}$')
             plt.ylim(0,6)
-            #plt.xlim(0,v_end)
+            plt.xlim(0,v_end)
             label = "z rate by changing " + v[v_index]
             plt.xlabel(label)
 
