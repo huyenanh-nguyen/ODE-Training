@@ -67,7 +67,7 @@ class Goodwin:
             t_step (float or int): if we choose a time from 0 to 5000, how many steps should the system take till it reach 5000
             t_last (int): because the system has to go through transient phase until it reachs his equilibrium. \n
                           So we need to remove the first part of the solution in order to see a stable plot.\n
-                          We are only taking the last couple of 1000 timepoints in count. (example number)\n
+                          We are only taking the last couple of for example 1000 timepoints in count.\n
         """
 
         self.par = par
@@ -97,6 +97,7 @@ class Goodwin:
     def goodwin_normalizer(self):
         """
         The Solution for each parameters are not at the same spot. normalizing to their mean gives us a nice overlay of every solutions.
+        Also, i am removing the transiente part and only allow the last couple timepoints.
 
         Returns:
             array: Oscillations were normalized to their mean
@@ -107,7 +108,11 @@ class Goodwin:
         t_step = self.t_step
         t_last = self.t_last
 
+        
+
         return None
+    
+    
 
 
     
