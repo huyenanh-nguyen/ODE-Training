@@ -190,7 +190,7 @@ class Goodwin:
         return v_new
 
 
-    def bifurcation_solver(self, v_start, v_end, v_step, v_index):
+    def bifurcation_solver(self, v_start : float, v_end : float, v_step : float, v_index : int):
         """
         Args:
             v_start (float): First value of the interval
@@ -212,17 +212,28 @@ class Goodwin:
         return sol
     
 
-    def bifurcation_normalizer(self, v_start, v_end, v_step, v_index):
+    def bifurcation_normalizer(self, v_start : float, v_end : float, v_step : float, v_index : int):
+        """
+        Args:
+            v_start (float): First value of the interval
+            v_end (float): Last value of the interval
+            v_step (float): Steps of the interval
+            v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
+
+        Returns:
+            List: normalized values with the order: [numbers of changed v_parameters][datapoints] x,y,z - Parameters]
+        """
         sol = self.bifurcation_solver(v_start, v_end, v_step, v_index)
         t_step = self.t_step
         t_last = self.t_last
         keep = int(t_last/t_step)
+        par = self.par
 
         norm = []
 
         for i in range(len(sol)):
             v_holder = []
-            for k in range(len(sol[i][0])):
+            for k in range(len(par)):
                 x = sol[i][- keep:, k] / np.mean(sol[i][-keep:,k])   # normalizing to mean
                 v_holder.append(x)
             norm.append(v_holder)
@@ -231,7 +242,18 @@ class Goodwin:
         return norm
     
 
-    def bifurkacation_normalizier_plot(self, v_start, v_end, v_step, v_index):
+    def bifurkacation_normalizier_plot(self, v_start : float, v_end : float, v_step : float, v_index : int):
+        """_summary_
+
+        Args:
+            v_start (float): First value of the interval
+            v_end (float): Last value of the interval
+            v_step (float): Steps of the interval
+            v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
+
+        Returns:
+            plot: plotting all systems in one plot
+        """
 
         norm = self.bifurcation_normalizer(v_start, v_end, v_step, v_index)
         t_step = self.t_step
@@ -253,28 +275,48 @@ class Goodwin:
         return None
     
 
-    def bifurcation_extrema(self,  v_start, v_end, v_step, v_index):
+    def bifurcation_extrema(self,  v_start : float, v_end : float, v_step : float, v_index : int):
+        """
+        Args:
+            v_start (float): First value of the interval
+            v_end (float): Last value of the interval
+            v_step (float): Steps of the interval
+            v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
+
+        Returns:
+            list: returning two lists. first one contains all Maxima from the Goodwin-Oscillation and the second one all Minima from the Goodwin-Oscillation
+        """
         norm = self.bifurcation_normalizer(v_start, v_end, v_step, v_index)
         par = self.par
 
         maxi = []
         mini = []
-
         for i in range(len(norm)):
            
             maxi.append([max(norm[i][k]) for k in range(len(par))])
-            maxi.append([min(norm[i][k])for k in range(len(par))])
+            mini.append([min(norm[i][k])for k in range(len(par))])
 
         return maxi, mini
     
 
-    def bifurkation_plot(self,  v_start, v_end, v_step, v_index, par_index):
+    def bifurkation_plot(self, v_start : float, v_end : float, v_step : float, v_index : int, par_index : int):
+        """
+        Showing the Bifurkation behavior by changing the parameters and in which system
+        Args:
+            v_start (float): First value of the interval
+            v_end (float): Last value of the interval
+            v_step (float): Steps of the interval
+            v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
+            par_index (int): Position of the System-value that we want to plot (x -> 0, y -> 1, z -> 2)
 
-        maxi, mini = self.bifurcation_extrema(v_start, v_end,v_step, v_index)
-        uh = self.v_change(v_start, v_end, v_step, v_index)
-        hm = self.bifurcation_solver(v_start, v_end, v_step, v_index)
+        Returns:
+            _type_: _description_
+        """
+
+        maxi = self.bifurcation_extrema(v_start, v_end,v_step, v_index)[0]
+        mini = self.bifurcation_extrema(v_start, v_end,v_step, v_index)[1]
         v_look = np.arange(v_start, v_end, v_step)
-        breakpoint()
+
         v = ["v$_1$", "v$_2$", "v$_3$", "v$_4$", "v$_5$", "v$_6$", "v$_7$"]
 
         plt.plot(v_look, np.array(maxi)[:,par_index],'g')
