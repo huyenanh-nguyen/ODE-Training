@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pl
+import matplotlib.gridspec as gridspec
 from scipy.integrate import odeint
 from scipy.signal import argrelextrema
 
@@ -104,13 +106,69 @@ class Goodwin:
         """
        
         sol = self.goodwin_solver()
-        t = self.t
         t_step = self.t_step
         t_last = self.t_last
 
+        keep = int(t_last / t_step)
+
+        norm = [sol[- keep:,i] / np.mean(sol[-keep:,i]) for i in range(sol.shape[1])]   # normalizing to mean
         
+        return norm
+    
+
+    def limitcircle_timeseries(self):
+        """
+        Plotting the solution of the Goodwin differentiantion equation, which got normalize to their mean.
+
+        Returns:
+            Plot: shows a limit circle oscillation as time series. (keeping the last timepoints)
+        """
+
+        norm = self.goodwin_normalizer()
+        t_step = self.t_step
+        t_last = self.t_last
+
+        t = np.arange(0, t_last, t_step)
+
+        plt.plot(t,norm[0],'g',label=r'$\frac{dx}{dt}= v_1 \frac{K_1^2}{K_1^n + z^n} - v_2 \frac{x}{K_2 + x}$')
+        plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
+        plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
+        plt.ylabel('concentraition [a.u.]')
+        plt.ylim(0,5)
+        plt.xlim(0, t[-1])
+        plt.xlabel('time [h]')
+        plt.legend(loc='best')
+        plt.show()
 
         return None
+    
+
+    def limitcircle_phasespace(self):
+
+        norm = self.goodwin_normalizer()
+        fig, ax = plt.subplots(3, 1, figsize=(4, 8), sharex = False, sharey = False)
+        fig.suptitle("Phasespace")
+        ax[0].plot(norm[0], norm[1])
+        ax[0].set_xlabel('x concentraition [a.u.]')
+        ax[0].set_ylabel('y concentraition [a.u.]')
+
+        ax[1].plot(norm[1], norm[2], "r")
+        ax[1].set_xlabel('y concentraition [a.u.]')
+        ax[1].set_ylabel('z concentraition [a.u.]')
+
+        ax[2].plot(norm[0], norm[2], "g")
+        ax[2].set_xlabel('x concentraition [a.u.]')
+        ax[2].set_ylabel('z concentraition [a.u.]')
+
+        plt.tight_layout()  # avoinding overlapping the figures
+        
+        plt.show()
+
+        return None
+
+
+
+        
     
     
 
