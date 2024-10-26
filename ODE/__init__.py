@@ -20,10 +20,10 @@ Also, I will get to know a lot about the package scipy, which is a great exercis
 
 The inital parameters are -> par, t, v, k, n, t_step, t_last:
 Args:
-    par (array or list): x, y, z values. Initial values
-    t (array or list): timespan
-    v (array or list): produktions or degradtionsrate for v1, v2, v3, v4, v5, v6
-    k (array or list): half-saturated constante -> K1, K2, K4, K6
+    par (ndarray or list): x, y, z values. Initial values
+    t (ndarray or list): timespan
+    v (ndarray or list): produktions or degradtionsrate for v1, v2, v3, v4, v5, v6
+    k (ndarray or list): half-saturated constante -> K1, K2, K4, K6
     n (int): Hill coefficient
     t_step (float or int): if we choose a time from 0 to 5000, how many steps should the system take till it reach 5000
     t_last (int): because the system has to go through transient phase until it reachs his equilibrium. \n
