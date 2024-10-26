@@ -113,6 +113,26 @@ class Goodwin:
         return norm
     
 
+    def goodwin_period(self, par_index : int):
+        """
+        Getting Period T of the Goodwin-Oscillation.
+
+        Args:
+            par_index (int): index of the choosen system (x -> 0, y -> 1, z -> 2)
+
+        Returns:
+            int: period of the oscillation
+        """
+        norm = self.goodwin_normalizer()[par_index]
+        maxi = argrelmax(norm)[0]   # returning the index of the maximum
+
+        t = self.t
+
+        diff_t = t[maxi[1]] - t[maxi[0]] 
+
+        return diff_t
+    
+
     def limitcircle_timeseries(self):
         """
         Plotting the solution of the Goodwin differentiantion equation, which got normalize to their mean.
@@ -299,6 +319,27 @@ class Goodwin:
         return maxi, mini
     
 
+    def bifurcation_maxima_index(self,  v_start : float, v_end : float, v_step : float, v_index : int):
+        """
+        Args:
+            v_start (float): First value of the interval
+            v_end (float): Last value of the interval
+            v_step (float): Steps of the interval
+            v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
+
+        Returns:
+            list: returning two lists. first one contains all Maxima from the Goodwin-Oscillation and the second one all Minima from the Goodwin-Oscillation
+        """
+        norm = self.bifurcation_normalizer(v_start, v_end, v_step, v_index)
+        par = self.par
+
+        maxi = []
+        for i in range(len(norm)):
+            maxi.append([np.where(norm[i][k] == max(norm[i][k]))[0][0] for k in range(len(par))])
+
+        return maxi
+    
+
     def bifurkation_plot(self, v_start : float, v_end : float, v_step : float, v_index : int, par_index : int):
         """
         Showing the Bifurkation behavior by changing the parameters and in which system
@@ -348,7 +389,18 @@ class Goodwin:
         plt.show()
 
         return None
+    
 
+    def bifurkation_period(self, v_start : float, v_end : float, v_step : float, v_index : int, par_index : int):
+        norm = self.bifurcation_normalizer(v_start, v_end,v_step, v_index)
+        maxi_index = self.bifurcation_maxima_index(v_start, v_end,v_step, v_index)
+
+        t = self.t
+
+        period = []
+
+        for i in range(len(maxi_index)):
+            t
 
 
 
