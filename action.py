@@ -23,12 +23,12 @@ good = Goodwin(par, t, v, k, n, t_step, t_last)
 # [Figure 3]: Limit cycle oscillations, plotted as time series and in phase space
 
 
-# timeseries = good.limitcircle_timeseries()
-# phasespace = good.limitcircle_phasespace()
+timeseries = good.limitcircle_timeseries()
+phasespace = good.limitcircle_phasespace()
 
 
 # [Figure 4]: Bifurcation diagrams of the Goodwin model as a function of one of the system and changing one of the parameters
 
-# bifurcation = good.bifurkation_plot(0.1, 1.5, 0.01, 1, 0)
+bifurcation = good.bifurkation_plot(0.1, 1.5, 0.01, 1, 0)
 
-print(good.period_dynamic_plot(0.1, 1.5, 0.01, 1,0))
+period = good.period_dynamic_plot(0.1, 1.5, 0.01, 1,0)
