@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from scipy.signal import argrelextrema, argrelmin, argrelmax
+from scipy.signal import find_peaks
 
 
 def goodwin(par , t , v , k , n : int):
@@ -151,7 +152,7 @@ class Goodwin:
         plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
         plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
         plt.ylabel('concentraition [a.u.]')
-        plt.ylim(0,5)
+        plt.ylim(0,8)
         plt.xlim(0, t[-1])
         plt.xlabel('time [h]')
         plt.legend(loc='best')
@@ -328,14 +329,14 @@ class Goodwin:
             v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
 
         Returns:
-            list: returning two lists. first one contains all Maxima from the Goodwin-Oscillation and the second one all Minima from the Goodwin-Oscillation
+            list: list with all the Maxima_index for the systemparameters x,y,z. The distance varies a bit because this model is a non linear dynamical oscillator with errors and the parameters get changed a lot here.
         """
         norm = self.bifurcation_normalizer(v_start, v_end, v_step, v_index)
         par = self.par
 
         maxi = []
         for i in range(len(norm)):
-            maxi.append([np.where(norm[i][k] == max(norm[i][k]))[0][0] for k in range(len(par))])
+            maxi.append([find_peaks(norm[i][k])[0] for k in range(len(par))])
 
         return maxi
     
@@ -351,7 +352,7 @@ class Goodwin:
             par_index (int): Position of the System-value that we want to plot (x -> 0, y -> 1, z -> 2)
 
         Returns:
-            _type_: _description_
+            Plot: Bifurcation diagrams of the Goodwin model as a function of the systemparameters x,y,z degradation rate ν
         """
 
         maxi = self.bifurcation_extrema(v_start, v_end,v_step, v_index)[0]
@@ -392,15 +393,56 @@ class Goodwin:
     
 
     def bifurkation_period(self, v_start : float, v_end : float, v_step : float, v_index : int, par_index : int):
-        norm = self.bifurcation_normalizer(v_start, v_end,v_step, v_index)
+        """
+        Args:
+            v_start (float): First value of the interval
+            v_end (float): Last value of the interval
+            v_step (float): Steps of the interval
+            v_index (int): Position of the v-value that will be changed (v1 -> 0, v2 -> 1, v3 -> 2, v4 -> 3, v5 -> 4, v6 -> 5)
+            par_index (int): Position of the System-value that we want to plot (x -> 0, y -> 1, z -> 2)
+
+        Returns:
+            List: Periods for choosen systemparameters and choosen parameter that get changed. We are getting the mean of the distance, because the dinamic of this oscillator is nonlinear
+        """
         maxi_index = self.bifurcation_maxima_index(v_start, v_end,v_step, v_index)
 
-        t = self.t
+        t_last = self.t_last
+        t_step = self.t_step
+
+        t = np.arange(0, t_last, t_step)
 
         period = []
 
         for i in range(len(maxi_index)):
-            t
+            diff_t = np.diff(t[maxi_index[i][par_index]])
+            period.append(np.mean(diff_t))
+        
+        return period
+    
+
+    def period_dynamic_plot(self, v_start : float, v_end : float, v_step : float, v_index : int, par_index : int):
+        period = self.bifurkation_period(v_start, v_end,v_step, v_index, par_index)
+        v = np.arange(v_start, v_end, v_step)
+        par = ["x", "y", "z"]
+
+        valid_indices = ~np.isnan(period)
+
+        v = v[valid_indices]
+        period = np.array(period)[valid_indices]
+
+
+
+
+        plt.plot(v, period,'g')
+        plt.ylabel('Period [h]')
+        plt.ylim(0,(period.max()+10))
+        plt.xlim(0, v_end)
+        label = par[par_index] + ' degration rate'
+        plt.xlabel(label)
+        plt.legend(loc='best')
+        plt.show()
+
+        return None
 
 
 
