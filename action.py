@@ -40,12 +40,10 @@ good = Goodwin(par, t, v, k, n, t_step, t_last)
 # [Figure 5]: A positive feedback loop promotes oscillations in a Goodwin-like motif
 
 n_no_loop = 4
-t_no_loop = np.arange(0, 500, t_step)
+t_no_loop = np.arange(0, 5000, t_step)
 
-without_loop = Goodwin(par, t_no_loop, v, k, n_no_loop, t_step, t_last = 300)
-
-plot_without_loop = without_loop.limitcircle_timeseries()
+without_loop = Goodwin(par, np.arange(0, 500, t_step), v, k, n_no_loop, t_step, t_last = 300).limitcircle_timeseries()
 
 
-t_positive = Goodwin(par, t_no_loop, v, k, n_no_loop, t_step, t_last = 120).limitcircle_timeseries()
+t_positive = Goodwin(par, t_no_loop, v, k, n_no_loop, t_step, t_last = 300).limitcircle_timeseries_positive_feedback(1)
 

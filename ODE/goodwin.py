@@ -39,7 +39,7 @@ def goodwin_with_positive_loop(par , t , v , k , n : int, c : int):
     v1, v2, v3, v4, v5, v6 = v
     k1,k2,k4,k6 = k
 
-    dx = (v1 * ((k1**n + c * x)/ (k1**n + z**n))) - (v2 * (x / (k2 + x)))
+    dx = (v1 * (k1**n / (k1**n + z**n)) * (1 + c*x))- (v2 * (x / (k2 + x)))
     dy = (v3 * x) - (v4 * ( y / (k4 + y)))
     dz = (v5 * y) - (v6 * (z / (k6 + z)))
 
@@ -464,7 +464,55 @@ class Goodwin:
         plt.show()
 
         return None
+    
 
+    def goodwin_positive_feedback(self, c : int):
+
+        par = self.par
+        t = self.t
+        v = self.v
+        k = self.k
+        n = self.n
+        
+        return odeint(goodwin_with_positive_loop, par, t, args=(v, k , n, c))
+    
+    def goodwin_positive_feedback_normalizier(self, c : int):
+        sol = self.goodwin_positive_feedback(c)
+
+        t_step = self.t_step
+        t_last = self.t_last
+
+        keep = int(t_last / t_step)
+
+        norm = [sol[- keep:,i] / np.mean(sol[-keep:,i]) for i in range(sol.shape[1])]   # normalizing to mean
+        
+        return norm
+
+    def limitcircle_timeseries_positive_feedback(self, c : int):
+            """
+            Plotting the solution of the Goodwin differentiantion equation, which got normalize to their mean.
+
+            Returns:
+                Plot: shows a limit circle oscillation as time series. (keeping the last timepoints)
+            """
+
+            norm = self.goodwin_positive_feedback_normalizier(c)
+            t_step = self.t_step
+            t_last = self.t_last
+
+            t = np.arange(0, t_last, t_step)
+
+            plt.plot(t,norm[0],'g',label=r'$\frac{dx}{dt}= (v_1 \frac{K_1^2}{K_1^n + z^n}) \cdot (1 + cx)- v_2 \frac{x}{K_2 + x}$')
+            plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
+            plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
+            plt.ylabel('concentraition [a.u.]')
+            plt.ylim(np.min(norm) - 0.1, np.max(norm) + 0.5)
+            plt.xlim(left = 0)
+            plt.xlabel('time [h]')
+            plt.legend(loc='best')
+            plt.show()
+
+            return None
 
 
         
