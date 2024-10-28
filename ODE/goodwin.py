@@ -24,6 +24,27 @@ def goodwin(par , t , v , k , n : int):
 
     return [dx, dy, dz]
 
+def goodwin_with_positive_loop(par , t , v , k , n : int, c : int):
+    """Goodwill-Oscillator models with a positive feedbackloop on the systemvariable x
+        dx/dt = v1 * (K1^n + c * x)/(K1^n+z^n) - v2 * x/(K2+x)
+
+        dy/dt = v3 * x - v4 * y/(K4+y)
+
+        dz/dt = v5*y - v6 * z/(K6+z)
+
+        c (int): positive feedback loop on x
+    """
+
+    x,y,z = par
+    v1, v2, v3, v4, v5, v6 = v
+    k1,k2,k4,k6 = k
+
+    dx = (v1 * ((k1**n + c * x)/ (k1**n + z**n))) - (v2 * (x / (k2 + x)))
+    dy = (v3 * x) - (v4 * ( y / (k4 + y)))
+    dz = (v5 * y) - (v6 * (z / (k6 + z)))
+
+    return [dx, dy, dz]
+
 
 # [Marta del Olmo]____________________________________________________________________________________________________
 
@@ -152,8 +173,8 @@ class Goodwin:
         plt.plot(t,norm[1],'r',label=r'$\frac{dy}{dt}= v_3x - v_4 \frac{y}{K_4 + y}$')
         plt.plot(t,norm[2],'b',label=r'$\frac{dz}{dt}= v_5y - v_6 \frac{z}{K_6 + z}$')
         plt.ylabel('concentraition [a.u.]')
-        plt.ylim(0,8)
-        plt.xlim(0, t[-1])
+        plt.ylim(np.min(norm) - 0.1, np.max(norm) + 0.5)
+        plt.xlim(left = 0)
         plt.xlabel('time [h]')
         plt.legend(loc='best')
         plt.show()
