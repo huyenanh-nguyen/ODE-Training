@@ -78,23 +78,68 @@ def coupled_oscillator(par, t, A, period, K, n, lam):
 
 
 class Clock_Interaction:
+    """
+    Now we want to look into the Clock System. /n
+    In this Area we want to understand a coupled and an uncoupled oscillatorsystem. What happend if a forced will get add to  an autonomous system which will become a
+    non-autonomous system.
+    """
 
-    def __init__(self, par, t, A, period, lam, n):
+    def __init__(self, x ,y , t, A, period, lam : int, n):
         """_summary_
 
         Args:
-            par (_type_): _description_
-            t (_type_): _description_
-            A (_type_): _description_
-            period (_type_): _description_
-            lam (_type_): _description_
+            x (list or array): _description_
+            y (list or array): _description_
+            t (array): time
+            A (int): Amplitude
+            period (list or array): period
+            lam (int): amplitude relaxtation rate
             n (int): numbers of x values
         """
-        self.par = par
+        self.x = x
+        self.y = y
         self.t = t
         self.A = A
         self.period = period
         self.lam = lam
         self.n = n 
 
-print(meanfield(3,[1,3,5,4]))
+    def autonomous_solver(self):
+        x = self.x
+        y = self.y
+        t = self.t
+        A = self.A
+        period = self.period
+        lam = self.lam
+        n = self.n
+
+        sol = []
+
+        for i in range(n):
+            par = x[i], y[i]
+            sol.append(odeint(heterogeneous_oscillator, par, t, args= (A, period[i][0], lam)))
+
+        return sol
+    
+
+    def autonomous_plot(self, t_last, t_step):
+        sol = self.autonomous_solver()
+        t = np.arange(0,t_last, t_step)
+        keep = t_last/t_step
+
+        for i in sol:
+            plt.plot(t, i[-int(keep):,0], 'gray')
+
+        plt.ylabel('x concentraition [a.u.]')
+        plt.xlabel("time [h]")
+        plt.show()
+
+        return None
+    
+    
+
+
+
+    
+
+

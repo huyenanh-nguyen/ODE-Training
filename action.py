@@ -1,5 +1,7 @@
 from ODE import Goodwin
+from ODE import Clock_Interaction
 import numpy as np
+import matplotlib.pyplot as plt
 
 """
 Recreating Marta del Olmos paper.
@@ -11,7 +13,7 @@ Recreating Marta del Olmos paper.
 par = [0, 0, 0]
 t_step = 0.01
 t_last = 500 # 50h -> 1 point represent 1h
-t = np.arange(0, 5000, t_step)
+t = np.arange(0, 50000, t_step)
 
 v = [0.7, 0.45, 0.7, 0.35, 0.7, 0.35]
 k = [1,1,1,1]
@@ -41,8 +43,43 @@ good = Goodwin(par, t, v, k, n, t_step, t_last)
 
 n_no_loop = 4
 
-without_loop = Goodwin(par, np.arange(0, 500, t_step), v, k, n_no_loop, t_step, t_last = 300).limitcircle_timeseries()
+# without_loop = Goodwin(par, np.arange(0, 500, t_step), v, k, n_no_loop, t_step, t_last = 300).limitcircle_timeseries()
 
 
-t_positive = Goodwin(par, np.arange(0, 5000, t_step), v, k, n_no_loop, t_step, t_last = 120).limitcircle_timeseries_positive_feedback(1)
+# t_positive = Goodwin(par, np.arange(0, 5000, t_step), v, k, n_no_loop, t_step, t_last = 120).limitcircle_timeseries_positive_feedback(c = 1)
 
+
+
+# [Clock-Interaction]_______________________________________________________________________________________________________________________
+
+n = 50
+
+x = [np.random.randint(-100,100) for i in range(n)]
+y = [np.random.randint(-100,100) for i in range(n)]
+
+
+# par = [x,y]    # possible value for equation?
+t_step = 0.01
+t_last = 50 # 50h -> 1 point represent 1h
+t = np.arange(0, 5000, t_step)
+
+A = 1
+period = np.random.normal(24, 1.5, size = (n,1))
+lam = 0.03
+
+print(period[0])
+
+clock = Clock_Interaction(x, y , t, A, period, lam, n = n)
+
+# for i in range(len(x)):
+#     par = x[0],y[0]
+#     clock = Clock_Interaction(par, t, A, period[i][0], lam, n = n)
+#     plt.plot(clock.autonomous_solver()[-int(t_last/t_step):,0])
+# plt.show()
+
+
+print(clock.autonomous_plot(t_last, t_step))
+
+
+
+# Simulation of biological oscillators
