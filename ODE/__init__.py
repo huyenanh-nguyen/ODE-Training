@@ -1,7 +1,10 @@
 """
 # Goodwin - Mathematical Modeling in Circadian Rhythmicity 
 
-Trying to recreate the figures in Marta del Olmo's paper. Here we will tackle all figures about the Goodwin model. 
+Trying to recreate the figures in Marta del Olmo's paper. /n
+
+The first class "Goodwin" is all about the Goodwinmodel./
+Here we will tackle all figures about the Goodwin model. 
 The other models will get their own classes.
 
 A 3-Parameter System, where X activates Y, Y activates Z, and Z inhibits X, can be described through the 
@@ -29,7 +32,12 @@ Args:
     t_last (int): because the system has to go through transient phase until it reachs his equilibrium. \n
                     So we need to remove the first part of the solution in order to see a stable plot.\n
                     We are only taking the last couple of for example 1000 timepoints in count.\n
+
+
+
+The second class is about the interaction of the clock with the enviroment.
 """
 
 
 from .goodwin import Goodwin
+from .clock_interaction import Clock_Interaction
