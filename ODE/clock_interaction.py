@@ -20,11 +20,8 @@ def meanfield(n, x):
     Returns:
         float: average concentration of the neurotransmitter x_i
     """
-    x_sum = x[0]
-    for i in range(1, n):
-        x_sum += x[i]
     
-    return x_sum/n
+    return sum(x)/n
 
 
 def heterogeneous_oscillator(par, t, A, period, lam):
@@ -50,7 +47,7 @@ def heterogeneous_oscillator(par, t, A, period, lam):
     return [dx, dy]
 
 
-def coupled_oscillator(par, t, A, period, K, n, lam):
+def coupled_oscillator(par, t, A, period, lam, K, n, x_total):
     """
     K * Meanfield = Z(t) = F * cos(2*π/T * t + phi) -> Zeitgeber function that drives an autonomous system (drives oscillator of x -> forcing term)
     So the Oscillator get coupled by the mean-field M.
@@ -69,7 +66,7 @@ def coupled_oscillator(par, t, A, period, K, n, lam):
     """
     x, y = par
 
-    dx = lam * x * (A - np.sqrt(x**2 + y**2)) - (2 * np.pi / period) * y + K * meanfield(n, x)
+    dx = lam * x * (A - np.sqrt(x**2 + y**2)) - (2 * np.pi / period) * y + K * meanfield(n, x_total)
 
     dy = lam * y *(A - np.sqrt(x**2 + y**2)) + (2 * np.pi / period) * x
 
@@ -136,10 +133,39 @@ class Clock_Interaction:
 
         return None
     
+
+    def coupled_solver(self, t_last, t_step, K):
+        x = self.x
+        y = self.y
+        t = self.t
+        A = self.A
+        period = self.period
+        lam = self.lam
+        n = self.n
+
+        sol = []
+        for i in range(n):
+            par = x[i], y[i]
+            sol.append(odeint(coupled_oscillator, par, t, args= (A, period[i][0], lam, K, n, x)))
+
+        return sol
+
+
     
+    def coupled_plot(self, t_last, t_step, K):
+        sol = self.coupled_solver(t_last, t_step, K)
+        t = np.arange(0,t_last, t_step)
+        keep = t_last/t_step
+
+        for i in sol:
+            plt.plot(t, i[-int(keep):,0], 'red')
+
+        plt.ylabel('x concentraition [a.u.]')
+        plt.xlabel("time [h]")
+        plt.show()
+
+        return None
 
 
 
     
-
-
