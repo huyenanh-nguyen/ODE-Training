@@ -149,18 +149,34 @@ class Clock_Interaction:
             sol.append(odeint(coupled_oscillator, par, t, args= (A, period[i][0], lam, K, n, x)))
 
         return sol
-
-
     
-    def coupled_plot(self, t_last, t_step, K):
+
+    def coupled_mean(self, t_last, t_step, K, value): # value = x or y 
         sol = self.coupled_solver(t_last, t_step, K)
         t = np.arange(0,t_last, t_step)
         keep = t_last/t_step
+        meany = np.mean(sol, axis= 0)[-int(keep):,value]
 
-        for i in sol:
-            plt.plot(t, i[-int(keep):,0], 'red')
+        return meany
 
-        plt.ylabel('x concentraition [a.u.]')
+    
+    def coupledwithauto_plot(self, t_last, t_step, K, value):
+        auto = self.autonomous_solver()
+        sol = self.coupled_mean(t_last, t_step, K, value)
+        t = np.arange(0,t_last, t_step)
+        keep = t_last/t_step
+
+        for i in auto:
+            plt.plot(t, i[-int(keep):,0], 'grey')
+
+        plt.plot(t, sol, 'red')
+
+        if value == 0:
+            plt.ylabel('x concentraition [a.u.]')
+        else:
+            plt.ylabel('y concentraition [a.u.]')
+        
+        plt.ylim(-2,2)
         plt.xlabel("time [h]")
         plt.show()
 

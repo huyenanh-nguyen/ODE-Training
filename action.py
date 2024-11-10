@@ -56,29 +56,28 @@ n = 50
 
 x = [np.random.randint(-100,100) for i in range(n)]
 y = [np.random.randint(-100,100) for i in range(n)]
-
 # par = [x,y]    # possible value for equation?
 t_step = 0.01
 t_last = 200 # 50h -> 1 point represent 1h
-t = np.arange(0, 5000, t_step)
+t = np.arange(0, 100*24, t_step)
 
 A = 1
 period = np.random.normal(24, 1.5, size = (n,1))
 lam = 0.03
 
-print(period[0])
+print(x)
 
 clock = Clock_Interaction(x, y , t, A, period, lam, n = n)
 
 
-# print(np.mean(clock.coupled_solver(t_last, t_step, 0), axis= 0))
-keep = t_last/t_step
+print(clock.coupledwithauto_plot(t_last, t_step, 0, 0))
+# keep = t_last/t_step
 
-plt.plot(np.arange(0,t_last, t_step), np.mean(clock.coupled_solver(t_last, t_step, 0), axis= 0)[-int(keep):,0], 'red')
+# plt.plot(np.arange(0,t_last, t_step), np.mean(clock.coupled_solver(t_last, t_step, 0), axis= 0)[-int(keep):,0], 'red')
 
-plt.ylabel('x concentraition [a.u.]')
-plt.xlabel("time [h]")
-plt.show()
+# plt.ylabel('x concentraition [a.u.]')
+# plt.xlabel("time [h]")
+# plt.show()
 
 
 
