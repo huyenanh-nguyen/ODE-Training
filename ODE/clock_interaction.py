@@ -102,6 +102,10 @@ class Clock_Interaction:
         self.n = n 
 
     def autonomous_solver(self):
+        """giving the solution of the ODE without the meanfield and coupled parameter
+
+        Returns:List for each xi or yi (depending on how many n's we got)
+        """
         x = self.x
         y = self.y
         t = self.t
@@ -119,7 +123,16 @@ class Clock_Interaction:
         return sol
     
 
-    def autonomous_plot(self, t_last, t_step):
+    def x_autonomous_plot(self, t_last, t_step):
+        """plotting the solution of the autonomous heterogeneous amplitudephase oscillators of xi
+
+        Args:
+            t_last (int): _description_
+            t_step (int): _description_
+
+        Returns:
+            Plot: _description_
+        """
         sol = self.autonomous_solver()
         t = np.arange(0,t_last, t_step)
         keep = t_last/t_step
@@ -135,6 +148,16 @@ class Clock_Interaction:
     
 
     def coupled_solver(self, t_last, t_step, K):
+        """returning solution of the ODE with the coupled parameter for each xi and yi
+
+        Args:
+            t_last (_type_): _description_
+            t_step (_type_): _description_
+            K (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         x = self.x
         y = self.y
         t = self.t
@@ -151,9 +174,27 @@ class Clock_Interaction:
         return sol
     
 
+    def autonom_mean(self, t_last, t_step, value):
+        sol = self.autonomous_solver()
+        keep = t_last/t_step
+        meany = np.mean(sol, axis= 0)[-int(keep):,value]
+
+        return meany
+    
+
     def coupled_mean(self, t_last, t_step, K, value): # value = x or y 
+        """_summary_
+
+        Args:
+            t_last (_type_): _description_
+            t_step (_type_): _description_
+            K (float or int): _description_
+            value (int): index for x and x (0 is x and  is y)
+
+        Returns:
+            _type_: _description_
+        """
         sol = self.coupled_solver(t_last, t_step, K)
-        t = np.arange(0,t_last, t_step)
         keep = t_last/t_step
         meany = np.mean(sol, axis= 0)[-int(keep):,value]
 
