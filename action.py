@@ -65,19 +65,12 @@ A = 1
 period = np.random.normal(24, 1.5, size = (n,1))
 lam = 0.03
 
-print(x)
+# print(x)
 
 clock = Clock_Interaction(x, y , t, A, period, lam, n = n)
 
 
-print(clock.coupledwithauto_plot(t_last, t_step, 0, 0))
-# keep = t_last/t_step
-
-# plt.plot(np.arange(0,t_last, t_step), np.mean(clock.coupled_solver(t_last, t_step, 0), axis= 0)[-int(keep):,0], 'red')
-
-# plt.ylabel('x concentraition [a.u.]')
-# plt.xlabel("time [h]")
-# plt.show()
+print(clock.coupledwithauto_plot(t_last, t_step, 0.1, 0))
 
 
 
