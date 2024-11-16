@@ -54,24 +54,26 @@ n_no_loop = 4
 
 n = 50
 
-x = [np.random.randint(-100,100) for i in range(n)]
-y = [np.random.randint(-100,100) for i in range(n)]
-# par = [x,y]    # possible value for equation?
+x = [np.random.randint(-1,1) for i in range(n)]
+y = [np.random.randint(-1,1) for i in range(n)]
+
 t_step = 0.01
-t_last = 200 # 50h -> 1 point represent 1h
+t_last = 50 # 50h -> 1 point represent 1h
 t = np.arange(0, 100*24, t_step)
 
 A = 1
 period = np.random.normal(24, 1.5, size = (n,1))
 lam = 0.03
 
-# print(x)
 
 clock = Clock_Interaction(x, y , t, A, period, lam, n = n)
 
 
-print(clock.coupledwithauto_plot(t_last, t_step, 0.1, 0))
+#print(clock.coupled_mean(t_last, t_step,0.1, 0))
 
+for i in range(n):
+    plt.plot(clock.coupled_solver(0.1)[i][:,0])
+plt.show()
 
 
 # Simulation of biological oscillators
