@@ -1,34 +1,33 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from scipy.signal import argrelmax
 from scipy.signal import find_peaks
-
-# [Clock-interactions with their Enviroment]_________________________________________________________________________________________________________________________________________________-
-
+ 
+# [ODE]___________________________________________________________________________________________________________________________________________________________
 def meanfield(n, x):
     """there is a coupling mechanism between the neurons through periodic neurotransmitter release and synaptic connections./n
-    Global coupling among all oscillators in the SCN (suprachiasmatic nucleus can be achieved through the mean-field M, 
+    Global coupling among all oscillators in the SCN (suprachiasmatic nucleus can be achieved through the mean-field M,
     wich can be defined as the average concentration of Neurotransmitter x:/n
-
+ 
     M = 1/N ∑ x_i (From i = 1 to N)
-
+ 
     Args:
         n (int): Numbers of neurotransmitter
         x (list or array): List of the concentration of the neurotransmitter.
-
+ 
     Returns:
         float: average concentration of the neurotransmitter x_i
     """
-    
-    return sum(x)/n
-
-
-def coupled_oscillator(par, t, A, period, lam, K, n, x_total):
+   
+    return  np.sum(x, axis = 0)/n
+ 
+def coupled_oscillator(par, t, A, period, lam, K, n):
     """
     K * Meanfield = Z(t) = F * cos(2*π/T * t + phi) -> Zeitgeber function that drives an autonomous system (drives oscillator of x -> forcing term)
     So the Oscillator get coupled by the mean-field M.
-
+ 
     Args:
         par (list): x and y values as list
         t (array or list): time
@@ -37,117 +36,63 @@ def coupled_oscillator(par, t, A, period, lam, K, n, x_total):
         K (int): denotes strength of the coupling between meanfield and single oscillatory units
         n (int): numbers of values of x in the area
         lam (int): amplitude relaxtation rate
-
+ 
     Returns:
-        ODE
+        ODE          
+ 
     """
-    x, y = par
-
-    dx = lam * x * (A - np.sqrt(x**2 + y**2)) - (2 * np.pi / period) * y + K * meanfield(n, x_total)
-
-    dy = lam * y *(A - np.sqrt(x**2 + y**2)) + (2 * np.pi / period) * x
-
-    return [dx, dy]
-
-
-
-class Clock_Interaction:
-    """
-    Now we want to look into the Clock System. /n
-    In this Area we want to understand a coupled and an uncoupled oscillatorsystem. What happend if a forced will get add to  an autonomous system which will become a
-    non-autonomous system.
-    """
-
-    def __init__(self, x ,y , t, A, period, lam : int, n):
-        """_summary_
-
-        Args:
-            x (list or array): _description_
-            y (list or array): _description_
-            t (array): time
-            A (int): Amplitude
-            period (list or array): period
-            lam (int): amplitude relaxtation rate
-            n (int): numbers of x values
-        """
-        self.x = x
-        self.y = y
-        self.t = t
-        self.A = A
-        self.period = period
-        self.lam = lam
-        self.n = n 
-    
-
-    def coupled_solver(self, K):
-        """returning solution of the ODE with the coupled parameter for each xi and yi
-
-        Args:
-            t_last (_type_): _description_
-            t_step (_type_): _description_
-            K (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        x = self.x
-        y = self.y
-        t = self.t
-        A = self.A
-        period = self.period
-        lam = self.lam
-        n = self.n
-
-        sol = []
-        for i in range(n):
-            par = x[i], y[i]
-            sol.append(odeint(coupled_oscillator, par, t, args= (A, period[i][0], lam, K, n, x)))
-
-        return sol
-    
-
-    def coupled_mean(self, t_last, t_step, K, value): # value = x or y 
-        """_summary_
-
-        Args:
-            t_last (_type_): _description_
-            t_step (_type_): _description_
-            K (float or int): _description_
-            value (int): index for x and x (0 is x and 1 is y)
-
-        Returns:
-            _type_: _description_
-        """
-        sol = self.coupled_solver(K)
-        keep = t_last/t_step
-        meany = np.mean(sol, axis= 1)[-int(keep):,value]
-
-        return meany
-
-    
-    def coupledwithauto_plot(self, t_last, t_step, K, value):
-        cop = self.coupled_solver(K)
-        sol = self.coupled_mean(t_last, t_step, K, value)
-        t = np.arange(0 , t_last, t_step)
-        keep = t_last/t_step
-
-        for i in cop:
-            plt.plot(t, i[-int(keep):,value], 'grey')
-
-        plt.plot(t, sol, 'red')
-
-        if value == 0:
-            plt.ylabel('x concentraition [a.u.]')
-        else:
-            plt.ylabel('y concentraition [a.u.]')
-        
-        plt.ylim(-2,2)
-
-        plt.xlabel("time [h]")
-        plt.show()
-
-        return None
+    x = par[0:n:1]
+    y = par [-n::1]
+ 
+    dx = lam * x * (A - np.sqrt(x**2 + y**2)) - (2 * np.pi *y / period) + K * meanfield(n, x)  
+ 
+    dy = lam * y *(A - np.sqrt(x**2 + y**2)) + (2 * np.pi* x / period)
+ 
+    return np.concatenate((dx,dy))
 
 
 
-    
+# [Parameter]_____________________________________________________________________________________________________________________________________________________________
+ 
+n = 10  # numbers of events
+x = [np.random.uniform(-1,1) for i in range(n)] # x-values
+y = [np.random.uniform(-1,1) for i in range(n)] # y-values
+ 
+t_step = 0.1
+t_last = 2400 # 50h -> 1 point represent 1h
+t = np.arange(0, 100*24, t_step)
+ 
+keep = t_last/t_step
+ 
+A = 0.1   # Amplitude
+period = np.random.normal(24, 1.5, size = (n,1)).flatten('C')
+lam = 0.03
+K = 0.2
+ 
+# [Solution for individual and average events]________________________________________________________________________________________________________________________________________________________________
+ 
+# sol = []
+# for i in range(n):
+#     tau = period[i]
+#     par = x[i], y[i]
+#     sol.append(odeint(coupled_oscillator, par, t, args = (A, tau, lam, K, n, x)))
+ 
+par = np.hstack((x, y))
+sol = odeint(coupled_oscillator, par, t, args = (A, period, lam, K, n))
+ 
+# sol got two variables x and y. If i go through the list,the list looks like this: [[x,y], [x,y], [x,y]...]
+mean_event = np.mean(sol.T[0:n:1], axis = 0)[-int(keep):]    # average of the events
+# breakpoint()
+# [Plot]______________________________________________________________________________________________________________________________________________________________________________________________________
+ 
+# breakpoint()
+ 
+# plt.plot(np.arange(0, t_last, t_step), np.array(sol)[0,:,0][-int(keep):], "grey")
+for j in range(n):
+    plt.plot(np.arange(0, t_last, t_step), sol.T[j][-int(keep):] , "grey")
+plt.plot(np.arange(0, t_last, t_step), mean_event, "red")
+ 
+plt.ylim(-4,4)
+ 
+plt.xlabel("time [h]")
+plt.show()

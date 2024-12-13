@@ -54,8 +54,8 @@ n_no_loop = 4
 
 n = 50
 
-x = [np.random.randint(-1,1) for i in range(n)]
-y = [np.random.randint(-1,1) for i in range(n)]
+x = [np.random.uniform(-1,1) for i in range(n)]
+y = [np.random.uniform(-1,1) for i in range(n)]
 
 t_step = 0.01
 t_last = 50 # 50h -> 1 point represent 1h
@@ -66,13 +66,13 @@ period = np.random.normal(24, 1.5, size = (n,1))
 lam = 0.03
 
 
-clock = Clock_Interaction(x, y , t, A, period, lam, n = n)
+clock = Clock_Interaction(x, y , t, A, period, lam, n)
 
 
 #print(clock.coupled_mean(t_last, t_step,0.1, 0))
 
 for i in range(n):
-    plt.plot(clock.coupled_solver(0.1)[i][:,0])
+    plt.plot(clock.coupled_solver(0.1)[i][-int(t_last/t_step):,0])
 plt.show()
 
 
