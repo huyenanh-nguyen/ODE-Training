@@ -83,7 +83,7 @@ class Clockinteractions:
         sol = odeint(coupled_oscillator, par, t, args = (A, period, lam, K, n))
         return sol
     
-    def meanevents(self, value_index):
+    def bulksignals(self, value_index):
         """
 
         Args:
@@ -102,6 +102,32 @@ class Clockinteractions:
         return mean_event
 
 
+    def plot_oscillator(self, value_index, t_last, t_step):
+        sol = self.sync_oscillator_solver()
+        mean_event = self. bulksignals(value_index)
+        n = self.n
+
+        keep = t_last/t_step
+
+        for j in range(n):
+            plt.plot(np.arange(0, t_last, t_step), sol.T[j][-int(keep):] , "grey")
+        plt.plot(np.arange(0, t_last, t_step), mean_event, "red")
+        
+        plt.ylim(-4,4)
+        
+        if value_index == 0:
+            plt.ylabel("x conc [a.u.]")
+        
+        elif value_index == 1:
+            plt.ylabel("y conc [a.u.]")
+
+        plt.xlabel("time [h]")
+        plt.show()
+
+        return None
+
+
+
 # [Parameter]_____________________________________________________________________________________________________________________________________________________________
  
 n = 10  # numbers of events
@@ -114,10 +140,15 @@ t = np.arange(0, 100*24, t_step)
  
 keep = t_last/t_step
  
-A = 0.1   # Amplitude
+A = 1   # Amplitude
 period = np.random.normal(24, 1.5, size = (n,1)).flatten('C')
 lam = 0.03
-K = 0.2
+K = 0.1
+
+
+clock = Clockinteractions(x, y, t, A, period, lam, n, K)
+
+print(clock.plot_oscillator(1, t_last, t_step))
  
 # [Solution for individual and average events]________________________________________________________________________________________________________________________________________________________________
  
@@ -127,22 +158,22 @@ K = 0.2
 #     par = x[i], y[i]
 #     sol.append(odeint(coupled_oscillator, par, t, args = (A, tau, lam, K, n, x)))
  
-par = np.hstack((x, y))
-sol = odeint(coupled_oscillator, par, t, args = (A, period, lam, K, n))
+# par = np.hstack((x, y))
+# sol = odeint(coupled_oscillator, par, t, args = (A, period, lam, K, n))
  
 # sol got two variables x and y. If i go through the list,the list looks like this: [[x,y], [x,y], [x,y]...]
-mean_event = np.mean(sol.T[0:n:1], axis = 0)[-int(keep):]    # average of the events
+# mean_event = np.mean(sol.T[0:n:1], axis = 0)[-int(keep):]    # average of the events
 # breakpoint()
 # [Plot]______________________________________________________________________________________________________________________________________________________________________________________________________
  
 # breakpoint()
  
 # plt.plot(np.arange(0, t_last, t_step), np.array(sol)[0,:,0][-int(keep):], "grey")
-for j in range(n):
-    plt.plot(np.arange(0, t_last, t_step), sol.T[j][-int(keep):] , "grey")
-plt.plot(np.arange(0, t_last, t_step), mean_event, "red")
+# for j in range(n):
+#     plt.plot(np.arange(0, t_last, t_step), sol.T[j][-int(keep):] , "grey")
+# plt.plot(np.arange(0, t_last, t_step), mean_event, "red")
  
-plt.ylim(-4,4)
+# plt.ylim(-4,4)
  
-plt.xlabel("time [h]")
-plt.show()
+# plt.xlabel("time [h]")
+# plt.show()
