@@ -50,6 +50,56 @@ def coupled_oscillator(par, t, A, period, lam, K, n):
  
     return np.concatenate((dx,dy))
 
+# [Interactions]_________________________________________________________________________________________________________________________________
+class Clockinteractions:
+
+    def __init__(self, x, y , t, A, period, lam, n, K):
+        self.x = x
+        self.y = y
+        self.t = t
+        self.A = A
+        self.period = period
+        self.lam = lam
+        self.n = n
+        self.K = K
+
+    def sync_oscillator_solver(self):
+        """Solving the coupled Oscillator ODE
+
+        Returns:
+            Array: [[x,y], [x,y], [x,y]...]
+        """
+        x = self.x
+        y = self.y
+        t = self.t
+        A = self.A
+        period = self.period
+        lam = self.lam
+        n = self.n
+        K = self.K
+
+        par = np.hstack((x,y))
+
+        sol = odeint(coupled_oscillator, par, t, args = (A, period, lam, K, n))
+        return sol
+    
+    def meanevents(self, value_index):
+        """
+
+        Args:
+            value_index (int): Solutionposition -> x has the index 0 and y has the index 1
+
+        Returns:
+            Array: the mean value for through all the events.
+        """
+        sol = self.sync_oscillator_solver()
+        if value_index == 0:
+            mean_event = np.mean(sol.T[0:n:1], axis = 0)
+        
+        elif value_index == 1:
+            mean_event = np.mean(sol.T[-n::1], axis = 0)
+
+        return mean_event
 
 
 # [Parameter]_____________________________________________________________________________________________________________________________________________________________
