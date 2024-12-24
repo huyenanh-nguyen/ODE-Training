@@ -40,4 +40,5 @@ The second class is about the interaction of the clock with the enviroment.
 
 
 from .goodwin import Goodwin
-from .clock_interaction import Clock_Interaction
+from .clock_interaction import Clockinteractions
+from .duffing import Duffing
