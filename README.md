@@ -1,4 +1,4 @@
-# MB19 Seminar practicing with ODEs
+# General Practice with ODEs
 
 The concept on how to build an ODE and how to solve it numerically is a fundamental concept in physics and also in biology. In this seminar, we will practice how to solve ODEs numerically using Python. We will use the `scipy` library to solve the ODEs.
 
