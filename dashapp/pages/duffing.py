@@ -16,9 +16,9 @@ external_stylesheets = dbc.themes.JOURNAL
 
 dash.register_page(
     __name__, 
-    path = "/implementing",
-    title = "Implementing",
-    name = "implementing",
+    path = "/Duffing",
+    title = "Duffing",
+    name = "Duffing",
     theme = external_stylesheets
 )
 
@@ -27,7 +27,7 @@ dash.register_page(
 layout = dbc.Container(fluid = True, children = [
     # [header]
     dbc.NavbarSimple(
-        brand = "Implementing",
+        brand = "Duffing",
         color = "#F0D6C7",
         dark = True
     ),
@@ -103,8 +103,8 @@ layout = dbc.Container(fluid = True, children = [
                             ),
                         ], justify= "center"
                     )
-                ], title = "D U F F I N G")
-            ], start_collapsed= False, id = "duffing")
+                ], title = "I N I T I A L - C O N D I T I O N")
+            ], start_collapsed= False, id = "initial_condition", always_open=True,)
         ]
     )
 
