@@ -109,7 +109,7 @@ layout = dbc.Container(fluid = True, children = [
                             ),
 
                             dbc.Popover(
-                                children= "For example you only want to see the last 500 timepoints, enter 500 in the Input",
+                                children= "For example you only want to see the last 1100 timepoints, enter 1100 in the Input",
                                 target = "observ_timeinterval",
                                 body= True,
                                 trigger= "hover",
@@ -140,7 +140,7 @@ layout = dbc.Container(fluid = True, children = [
                                 ), width= {"size" : 2}
                             ),
                             dbc.Popover(
-                                children= "enter u",
+                                children= "enter u. For example 2",
                                 target = "u_value",
                                 body= True,
                                 trigger= "hover",
@@ -157,7 +157,7 @@ layout = dbc.Container(fluid = True, children = [
                             ),
 
                             dbc.Popover(
-                                children= "enter v",
+                                children= "enter v. For example 2",
                                 target = "v_value",
                                 body= True,
                                 trigger= "hover",
@@ -176,7 +176,7 @@ layout = dbc.Container(fluid = True, children = [
                     ),
 
                     dbc.Popover(
-                                children= "enter w",
+                                children= "enter w. For example 2",
                                 target = "w_value",
                                 body= True,
                                 trigger= "hover",
@@ -204,7 +204,7 @@ layout = dbc.Container(fluid = True, children = [
                             ),
 
                             dbc.Popover(
-                                children= "enter \u03B3",
+                                children= "enter \u03B3. For example 0.2",
                                 target = "gamma",
                                 body= True,
                                 trigger= "hover",
@@ -221,7 +221,7 @@ layout = dbc.Container(fluid = True, children = [
                             ),
 
                             dbc.Popover(
-                                children= "enter \u03B1",
+                                children= "enter \u03B1. For example 2.5",
                                 target = "alpha",
                                 body= True,
                                 trigger= "hover",
@@ -238,7 +238,7 @@ layout = dbc.Container(fluid = True, children = [
                             ),
 
                             dbc.Popover(
-                                children= "enter \u03A9",
+                                children= "enter \u03A9. For example 0.61",
                                 target = "omega",
                                 body= True,
                                 trigger= "hover",
@@ -267,52 +267,57 @@ layout = dbc.Container(fluid = True, children = [
                     )
                 ], title = "I N I T I A L - C O N D I T I O N"),
 
-            ], start_collapsed= False, id = "initial_condition", always_open=True,),
-        
-        
-        html.Div(style = {"padding" : 40}),
+            ], start_collapsed= False, id = "initial_condition", always_open=True,)
+        ]
+    ),
+
+    html.Div(style = {"padding" : 40}),
         dbc.Accordion([
                     dbc.AccordionItem([
+                        dbc.Row(
+                            children = [
+                                dbc.Col(dcc.Dropdown(
+                                    options = ["u", "v"],
+                                    value = "u",
+                                    id = "timeseries_ddm",
+                                    placeholder = "choose your y-values"
+                                ), width = {"size" : 3}),
+                            ], justify= "center"
+                        ),
 
                         dbc.Row(
                             children = [
-                                dbc.Col(
-                                    dbc.DropdownMenu(
-                                        [dbc.DropdownMenuItem("u", id = "y_phase_u", n_clicks=0) , 
-                                         dbc.DropdownMenuItem("v", id = "y_phase_v", n_clicks=0), 
-                                         dbc.DropdownMenuItem("w", id = "y_phase_w", n_clicks=0)],
-                                        label = "y-axis",
-                                        color = "info",
-                                    ), width = {"size" : "auto"}
-                                ),
+
+                                
 
                                 dbc.Col(
-                                    dbc.DropdownMenu(
-                                        [dbc.DropdownMenuItem("u", id = "x_phase_u", n_clicks=0) , 
-                                         dbc.DropdownMenuItem("v", id = "x_phase_v", n_clicks=0), 
-                                         dbc.DropdownMenuItem("w", id = "x_phase_w", n_clicks=0)],
-                                        label = "x-axis",
-                                        color = "success",
+                                    dcc.Graph(
+                                    id = "timeseries",
+                                    style = {"width" : "80vh", "height" : "80vh"}
                                     ), width = {"size" : "auto"}
                                 )
                             ], justify = "center"
-                        ),
+                        )
 
+                    ], title = "T I M E S E R I E S")
+                ], start_collapsed= True, always_open=True),
+
+    html.Div(style = {"padding" : 40}),
+        dbc.Accordion([
+                    dbc.AccordionItem([
                         dbc.Row(
                             children = [
                                 dbc.Col(
                                     dcc.Graph(
                                     id = "phaseportraits",
-                                    style = {"width" : "50vh", "height" : "50vh"}
+                                    style = {"width" : "80vh", "height" : "80vh"}
                                     ), width = {"size" : "auto"}
                                 )
                             ], justify = "center"
                         )
 
                     ], title = "P H A S E P O R T R A I T S")
-                ])
-        ]
-    )
+                ], start_collapsed= True, always_open=True)
 
 ])
 
@@ -324,9 +329,9 @@ layout = dbc.Container(fluid = True, children = [
 @callback(
    [ 
        Output("duffing_solution", "data"),
-       Output("duffing_x_solution", "data"),
-       Output("duffing_y_solution", "data"),
-       Output("duffing_z_solution", "data"),
+       Output("duffing_u_solution", "data"),
+       Output("duffing_v_solution", "data"),
+       Output("duffing_w_solution", "data"),
        
     ],
     [
@@ -364,19 +369,63 @@ def solv_duffing(click, t_end, t_step, keep, u, v, w, gamma, alpha, omega):
 
 
 @callback(
+        Output("timeseries", "figure"),
+        [
+            Input("timeseries_ddm", "value"),
+            Input("duffing_u_solution", "data"),
+            Input("duffing_v_solution", "data"),
+            Input("time_steps", "value"),
+            State("observ_timeinterval", "value"),
+        ]
+)
+def duffing_timeseries(dropdown, u_sol, v_sol, t_step, t_last):
+    t = np.arange(0, t_last, t_step)
+    
+    if dropdown == "u":
+    
+        fig = go.Figure()
+        fig.update_xaxes(title_text = " t in h ")
+        fig.update_yaxes(title_text = " u conc in a.u. ")
+        fig = fig.add_trace(
+            go.Scatter(
+                x = t,
+                y = u_sol,
+                mode = "lines"
+            )
+        )
+
+        return fig
+    
+    else:
+        fig = go.Figure()
+        fig.update_xaxes(title_text = " t in h ")
+        fig.update_yaxes(title_text = " v conc in a.u. ")
+        fig = fig.add_trace(
+            go.Scatter(
+                x = t,
+                y = v_sol,
+                mode = "lines"
+            )
+        )
+
+        return fig
+
+
+
+@callback(
     Output("phaseportraits", "figure"),
-    [Input("duffing_x_solution", "data"),
-    Input("duffing_y_solution", "data")],
+    [Input("duffing_u_solution", "data"),
+    Input("duffing_v_solution", "data")],
     prevent_initial_call = True
 )
-def duffing_phaseportraits(x_sol, y_sol):
+def duffing_phaseportraits(u_sol, v_sol):
     fig = go.Figure()
-    fig.update_xaxes(title_text = " u ")
-    fig.update_yaxes(title_text = " v ")
+    fig.update_xaxes(title_text = " u conc in a.u.")
+    fig.update_yaxes(title_text = " v conc in a.u.")
     fig = fig.add_trace(
         go.Scatter(
-            x = x_sol,
-            y = y_sol,
+            x = u_sol,
+            y = v_sol,
             mode = "lines"
         )
     )
