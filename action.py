@@ -1,5 +1,5 @@
 from ODE import Goodwin
-from ODE import Clock_Interaction
+from ODE import Clockinteractions
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -66,7 +66,7 @@ period = np.random.normal(24, 1.5, size = (n,1))
 lam = 0.03
 
 
-clock = Clock_Interaction(x, y , t, A, period, lam, n)
+clock = Clockinteractions(x, y , t, A, period, lam, n)
 
 
 #print(clock.coupled_mean(t_last, t_step,0.1, 0))

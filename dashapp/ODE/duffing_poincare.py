@@ -44,7 +44,7 @@ class Duffing:
         """
         sol = self.duffing_solver()
 
-        x_solv = sol[keep:,0]
+        x_solv = sol[-keep:,0]
 
         return x_solv
     
@@ -59,7 +59,7 @@ class Duffing:
         """
         sol = self.duffing_solver()
 
-        y_solv = sol[keep:,1]
+        y_solv = sol[-keep:,1]
 
         return y_solv
     
@@ -74,7 +74,7 @@ class Duffing:
         """
         sol = self.duffing_solver()
 
-        z_solv = sol[keep:,2]
+        z_solv = sol[-keep:,2]
 
         return z_solv
 

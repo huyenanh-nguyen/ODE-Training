@@ -5,7 +5,10 @@ import dash
 app = Dash(__name__, use_pages = True, suppress_callback_exceptions= True, pages_folder= "pages", external_stylesheets=[dbc.themes.JOURNAL])
 
 app.layout = html.Div([
-    # dcc.Store(id = "storage", storage_type = "session"),  # in case i want to store something temporarily over the web
+    dcc.Store(id = "duffing_solution", storage_type = "session"),  # in case i want to store something temporarily over the web
+    dcc.Store(id = "duffing_x_solution", storage_type = "session"),
+    dcc.Store(id = "duffing_y_solution", storage_type = "session"),
+    dcc.Store(id = "duffing_z_solution", storage_type = "session"),
     dash.page_container
 ])
 
