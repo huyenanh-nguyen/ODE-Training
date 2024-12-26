@@ -17,9 +17,9 @@ external_stylesheets = dbc.themes.JOURNAL
 
 dash.register_page(
     __name__, 
-    path = "/Duffing",
-    title = "Duffing",
-    name = "Duffing",
+    path = "/Poincare",
+    title = "Poincare",
+    name = "Poincare",
     theme = external_stylesheets
 )
 
@@ -29,10 +29,10 @@ layout = dbc.Container(fluid = True, children = [
     # [header]
     dbc.NavbarSimple(
         children = [
-            dbc.NavItem(dbc.NavLink("Poincare", href = "/Poincare", id = "href_poincare")),
-            dcc.Location(id = "href_duffing")
+            dbc.NavItem(dbc.NavLink("Duffing", href = "/Duffing", id = "href_duffing")),
+            dcc.Location(id = "href_poincare")
         ],
-        brand = "D u f f i n g",
+        brand = "P o i n c a r e",
         color = "#FCE1E1",
         dark = True
     ),
@@ -329,109 +329,3 @@ layout = dbc.Container(fluid = True, children = [
 
 
 # [Callbacks]_________________________________________________________________________________________________________________________________________________________
-
-@callback(
-   [ 
-       Output("duffing_solution", "data"),
-       Output("duffing_u_solution", "data"),
-       Output("duffing_v_solution", "data"),
-       Output("duffing_w_solution", "data"),
-       
-    ],
-    [
-        Input("calculate", "n_clicks"),
-        Input("last_timepoint", "value"),
-        Input("time_steps", "value"),
-        State("observ_timeinterval", "value"),
-        Input("u_value", "value"),
-        Input("v_value", "value"),
-        Input("w_value", "value"),
-        Input("gamma", "value"),
-        Input("alpha", "value"),
-        Input("omega", "value")
-    ],
-    prevent_initial_call = True
-)
-def solv_duffing(click, t_end, t_step, keep, u, v, w, gamma, alpha, omega):
-    if not click:
-        return None
-    
-    
-
-    par = [u, v, w]
-    t = np.arange(0, t_end, t_step)
-    
-    duff = Duffing(par, t, gamma, alpha, omega)
-
-    sol = duff.duffing_solver()
-
-    x_sol = duff.x_solv(keep)
-    y_sol = duff.y_solv(keep)
-    z_sol = duff.z_solv(keep)
-    
-    return [sol, x_sol, y_sol, z_sol]
-
-
-@callback(
-        Output("timeseries", "figure"),
-        [
-            Input("timeseries_ddm", "value"),
-            Input("duffing_u_solution", "data"),
-            Input("duffing_v_solution", "data"),
-            Input("time_steps", "value"),
-            State("observ_timeinterval", "value"),
-        ]
-)
-def duffing_timeseries(dropdown, u_sol, v_sol, t_step, t_last):
-    t = np.arange(0, t_last, t_step)
-    
-    if dropdown == "u":
-    
-        fig = go.Figure()
-        fig.update_xaxes(title_text = " t in h ")
-        fig.update_yaxes(title_text = " u(t)")
-        fig = fig.add_trace(
-            go.Scatter(
-                x = t,
-                y = u_sol,
-                mode = "lines"
-            )
-        )
-
-        return fig
-    
-    else:
-        fig = go.Figure()
-        fig.update_xaxes(title_text = " t in h ")
-        fig.update_yaxes(title_text = " v(t)")
-        fig = fig.add_trace(
-            go.Scatter(
-                x = t,
-                y = v_sol,
-                mode = "lines"
-            )
-        )
-
-        return fig
-
-
-
-@callback(
-    Output("phaseportraits", "figure"),
-    [Input("duffing_u_solution", "data"),
-    Input("duffing_v_solution", "data")],
-    prevent_initial_call = True
-)
-def duffing_phaseportraits(u_sol, v_sol):
-    fig = go.Figure()
-    fig.update_xaxes(title_text = " u conc in a.u.")
-    fig.update_yaxes(title_text = " v conc in a.u.")
-    fig = fig.add_trace(
-        go.Scatter(
-            x = u_sol,
-            y = v_sol,
-            mode = "lines"
-        )
-    )
-    return fig
-  
