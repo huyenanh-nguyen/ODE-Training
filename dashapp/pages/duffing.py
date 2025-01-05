@@ -103,6 +103,8 @@ layout = dbc.Container(fluid = True, children = [
                                 placement= "top"
                             ),
 
+                           
+
                             dbc.Col(
                                 dbc.Input(
                                     placeholder = "observal time interval",
@@ -321,7 +323,85 @@ layout = dbc.Container(fluid = True, children = [
                         )
 
                     ], title = "P H A S E P O R T R A I T S")
-                ], start_collapsed= True, always_open=True)
+                ], start_collapsed= True, always_open=True),
+
+    html.Div(style = {"padding" : 40}),
+        dbc.Accordion([
+                    dbc.AccordionItem([
+                        dbc.Row(
+                            children = [
+                                dbc.Col(dbc.FormText("x: "
+                                ), width = {"size" : "auto"}),
+
+                                dbc.Col(dcc.Dropdown(
+                                    options = ["u", "v", "alpha", "gamma", "omega"],
+                                    value = "u",
+                                    id = "drop_x",
+                                    placeholder = "choose your x-values"
+                                ), width = {"size" : 2}),
+
+                                dbc.Col(dbc.Input(
+                                    placeholder = "start",
+                                    id = "start_x-bifurcation",
+                                    step = 0.01,
+                                    type = "number",
+                                ), width = {"size" : 1}),
+
+                                dbc.Col(dbc.Input(
+                                    placeholder = "stop",
+                                    id = "stop_x-bifurcation",
+                                    step = 0.01,
+                                    type = "number",
+                                ), width = {"size" : 1}),
+
+                            ], justify= "center"
+                        ),
+
+                        html.Div(style = {"padding" : 10}),
+
+                        dbc.Row(
+                            children = [
+                                dbc.Col(dbc.FormText("y: "
+                                ), width = {"size" : "auto"}),
+
+                                dbc.Col(dcc.Dropdown(
+                                    options = ["u", "v", "alpha", "gamma", "omega"],
+                                    value = "omega",
+                                    id = "drop_y",
+                                    placeholder = "choose your y-values"
+                                ), width = {"size" : 2}),
+
+                                dbc.Col(dbc.Input(
+                                    placeholder = "start",
+                                    id = "start_y-bifurcation",
+                                    step = 0.01,
+                                    type = "number",
+                                ), width = {"size" : 1}),
+
+                                dbc.Col(dbc.Input(
+                                    placeholder = "stop",
+                                    id = "stop_y-bifurcation",
+                                    step = 0.01,
+                                    type = "number",
+                                ), width = {"size" : 1}),
+
+                            ], justify= "center"
+                        ),
+
+
+                        dbc.Row(
+                            children = [
+                                dbc.Col(
+                                    dcc.Graph(
+                                    id = "bifurkation_plot",
+                                    style = {"width" : "80vh", "height" : "80vh"}
+                                    ), width = {"size" : "auto"}
+                                )
+                            ], justify = "center"
+                        )
+
+                    ], title = "B I F U R C A T I O N")
+                ], start_collapsed= True, always_open=True),            
 
 ])
 
@@ -434,4 +514,3 @@ def duffing_phaseportraits(u_sol, v_sol):
         )
     )
     return fig
-  
