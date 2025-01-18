@@ -148,7 +148,7 @@ K = 0.1
 
 clock = Clockinteractions(x, y, t, A, period, lam, n, K)
 
-# print(clock.plot_oscillator(1, t_last, t_step))
+# print(clock.plot_oscillator(0, t_last, t_step))
  
 # [Solution for individual and average events]________________________________________________________________________________________________________________________________________________________________
  

@@ -7,6 +7,30 @@ import numpy as np
 from ODE import Duffing
 from pathlib import Path
 import plotly.graph_objects as go
+from scipy.integrate import odeint
+
+# [Duffing ODE]____________________________________________________________________________________________________________________________________________________________
+
+def duffing(par, t, gamma, alpha, omega):
+    """_summary_
+
+    Args:
+        par (_type_): _description_
+        t (_type_): _description_
+        gamma (_type_): dämpfung
+        alpha (_type_): treibende kraft
+        omega (_type_): 2*pi = omega_0, wenn omega_0 gleich 1 ist, dann ist es die periode 2*pi
+
+    Returns:
+        _type_: _description_
+    """
+    x, y, z = par
+
+    dx = (y)
+    dy = (-x - x**3 - gamma * y + alpha * np.cos( 2 * np.pi * z))
+    dz = (omega / (2 * np.pi))
+
+    return [dx, dy, dz]
 
 # [Design]____________________________________________________________________________________________________________________________________________________________
 
@@ -334,8 +358,8 @@ layout = dbc.Container(fluid = True, children = [
                                 ), width = {"size" : "auto"}),
 
                                 dbc.Col(dcc.Dropdown(
-                                    options = ["u", "v", "alpha", "gamma", "omega"],
-                                    value = "u",
+                                    options = ["alpha", "gamma", "omega"],
+                                    value = "omega",
                                     id = "drop_x",
                                     placeholder = "choose your x-values"
                                 ), width = {"size" : 2}),
@@ -365,25 +389,11 @@ layout = dbc.Container(fluid = True, children = [
                                 ), width = {"size" : "auto"}),
 
                                 dbc.Col(dcc.Dropdown(
-                                    options = ["u", "v", "alpha", "gamma", "omega"],
-                                    value = "omega",
+                                    options = ["u", "v"],
+                                    value = "u",
                                     id = "drop_y",
                                     placeholder = "choose your y-values"
-                                ), width = {"size" : 2}),
-
-                                dbc.Col(dbc.Input(
-                                    placeholder = "start",
-                                    id = "start_y-bifurcation",
-                                    step = 0.01,
-                                    type = "number",
-                                ), width = {"size" : 1}),
-
-                                dbc.Col(dbc.Input(
-                                    placeholder = "stop",
-                                    id = "stop_y-bifurcation",
-                                    step = 0.01,
-                                    type = "number",
-                                ), width = {"size" : 1}),
+                                ), width = {"size" : 4}),
 
                             ], justify= "center"
                         ),
@@ -514,3 +524,54 @@ def duffing_phaseportraits(u_sol, v_sol):
         )
     )
     return fig
+
+
+# @callback(
+#     Output("bifurkation_plot", "figure"),
+#     [
+#     Input("calculate", "n_clicks"),
+#     Input("last_timepoint", "value"),
+#     Input("time_steps", "value"),
+#     State("observ_timeinterval", "value"),
+#     Input("u_value", "value"),
+#     Input("v_value", "value"),
+#     Input("w_value", "value"),
+#     Input("gamma", "value"),
+#     Input("alpha", "value"),
+#     Input("omega", "value"), 
+#     Input("drop_x", "value"),
+#     Input("start_x-bifurcation", "value"),
+#     Input("stop_x-bifurcation", "value"),
+#     Input("drop_y", "value"),
+
+#     ]
+# )
+# def duffing_bifurkation(click, t_end, t_step, keep, u, v, w, gamma, alpha, omega, x_choice, y_choice, x_start, x_stop):
+#     if not click:
+#         return None
+    
+#     t = np.arange(0, t_end, t_step)
+#     par = [u, v, w]
+
+#     # make a dictionary with the parameters and sign those arrays to each paramters. if the user choose a specific value, it will take from the dictionary
+
+#     x_range = np.arange(x_start, x_stop, 0.01)
+    
+
+#     parameters = {"alpha" : x_range,
+#                   "gamma" : x_range,
+#                   "omega" : x_range}
+    
+
+
+#     fig = go.Figure()
+#     fig.update_xaxes(title_text = " u conc in a.u.")
+#     fig.update_yaxes(title_text = " v conc in a.u.")
+#     fig = fig.add_trace(
+#         go.Scatter(
+#             # x = u_sol,
+#             # y = v_sol,
+#             mode = "lines"
+#         )
+#     )
+#     return fig

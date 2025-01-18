@@ -18,3 +18,4 @@ if __name__ == "__main__":
 
 # http://127.0.0.1:8050
 # http://192.168.1.4:8050 -> for other devices
+

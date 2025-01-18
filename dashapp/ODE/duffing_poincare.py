@@ -77,6 +77,10 @@ class Duffing:
         z_solv = sol[-keep:,2]
 
         return z_solv
+    
+
+    # def duffing_matrixsolver(self):
+
 
 
 # par = [-2,-2,-2]
@@ -103,3 +107,21 @@ class Duffing:
 # plt.show()
 
 
+# x_start = 0
+# x_stop = 1
+
+# x_range = np.arange(x_start, x_stop, 0.01)
+
+# gamma = 0.2
+# alpha = 2.5
+# omega = x_range
+
+# sol = [odeint(duffing, par, t, args= (gamma, alpha, i)) for i in omega]
+# # print("solution", sol)
+# maxima = [find_peaks(i[-keep:,0 ])[0] for i in sol]
+
+
+# # plt.plot(t, sol[89][-keep:,0], "g")
+# print(sol[89][:,0][maxima[89]])
+# # plt.plot(np.arange(0,t_last, t_step), sol[89][:,0][maxima[89]], "x")
+# plt.show()
